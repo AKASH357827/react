@@ -27,7 +27,7 @@ const Checkout = () => {
       id: Date.now(),
       items: cart,
       address: formData,
-      status: 'Received',
+      status: 'Received', // Initial status
       total: cart.reduce((s, i) => s + i.price * i.quantity, 0) + 5,
       orderDate: new Date().toISOString(),
     };

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const statuses = ['Received', 'Preparing', 'Out for Delivery', 'Delivered'];
 
-// Add the OrderStatus component definition
 const OrderStatus = ({ status }) => {
   const currentIndex = statuses.indexOf(status);
 
@@ -31,60 +31,109 @@ const OrderStatus = ({ status }) => {
 const OrderTracking = () => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchOrder = () => {
+      // First try to get from localStorage
       const orderData = localStorage.getItem(`order_${id}`);
       if (orderData) {
         const parsedOrder = JSON.parse(orderData);
         setOrder(parsedOrder);
-
-        // Simulate order progress
-        const currentIndex = statuses.indexOf(parsedOrder.status);
         
-        if (currentIndex < statuses.length - 1) {
-          // Update status after random interval (between 5-15 seconds for demo)
-          const delay = Math.random() * 10000 + 5000;
-          setTimeout(() => {
+        // Simulate status updates
+        if (parsedOrder.status !== 'Delivered') {
+          const currentIndex = statuses.indexOf(parsedOrder.status);
+          if (currentIndex < statuses.length - 1) {
+            const nextStatus = statuses[currentIndex + 1];
             const updatedOrder = {
               ...parsedOrder,
-              status: statuses[currentIndex + 1]
+              status: nextStatus
             };
             localStorage.setItem(`order_${id}`, JSON.stringify(updatedOrder));
             setOrder(updatedOrder);
-          }, delay);
+            toast.info(`Order status updated to: ${nextStatus}`);
+          }
         }
+        setLoading(false);
+      } else {
+        setError('Order not found');
+        setLoading(false);
       }
     };
 
     fetchOrder();
-    // Poll for updates every 5 seconds
-    const interval = setInterval(fetchOrder, 5000);
+    // Update status every 10 seconds
+    const interval = setInterval(fetchOrder, 10000);
     return () => clearInterval(interval);
   }, [id]);
 
-  if (!order) return <div>Order not found</div>;
+  if (loading) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-8 text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto"></div>
+        <p className="mt-4">Loading order details...</p>
+      </div>
+    );
+  }
+
+  if (error || !order) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-8 text-center">
+        <div className="bg-red-50 text-red-600 p-4 rounded-lg">
+          {error || 'Order not found'}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <h2 className="text-2xl font-bold mb-6">Order #{order.id}</h2>
-      <OrderStatus status={order.status} />
-      
-      <div className="mt-6 bg-white rounded-lg shadow-sm p-6">
-        <h3 className="font-semibold mb-4">Order Details</h3>
-        <div className="space-y-4">
-          <p>Status: <span className="font-medium">{order.status}</span></p>
-          <p>Order Date: {new Date(order.orderDate).toLocaleString()}</p>
-          <p>Total Amount: ${order.total.toFixed(2)}</p>
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <h2 className="text-2xl font-bold mb-6">Order #{order.id}</h2>
+        
+        <OrderStatus status={order.status} />
+        
+        <div className="mt-8 space-y-6">
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Order Status</h3>
+            <p className="text-gray-600">Current Status: 
+              <span className="ml-2 font-medium text-black">{order.status}</span>
+            </p>
+          </div>
           
-          <div className="border-t pt-4">
-            <h4 className="font-medium mb-2">Items:</h4>
-            {order.items.map(item => (
-              <div key={item.id} className="flex justify-between py-2">
-                <span>{item.quantity}x {item.name}</span>
-                <span>${(item.price * item.quantity).toFixed(2)}</span>
-              </div>
-            ))}
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Order Details</h3>
+            <div className="space-y-2 text-gray-600">
+              <p>Order Date: {new Date(order.orderDate).toLocaleString()}</p>
+              <p>Total Amount: ${order.total.toFixed(2)}</p>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Delivery Address</h3>
+            <div className="bg-gray-50 p-4 rounded-lg text-gray-600">
+              <p>{order.address.street}</p>
+              {order.address.apartment && <p>{order.address.apartment}</p>}
+              <p>{order.address.city}, {order.address.zipCode}</p>
+              <p>Phone: {order.address.phone}</p>
+            </div>
+          </div>
+          
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Order Items</h3>
+            <div className="border rounded-lg divide-y">
+              {order.items.map(item => (
+                <div key={item.id} className="flex justify-between p-4">
+                  <div>
+                    <span className="font-medium">{item.quantity}x </span>
+                    <span>{item.name}</span>
+                  </div>
+                  <span className="text-gray-600">${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

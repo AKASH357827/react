@@ -14,7 +14,7 @@ const Signup = () => {
   });
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -28,114 +28,125 @@ const Signup = () => {
       return;
     }
 
-    // In a real app, you would make an API call to create the user
-    login({ 
-      name: formData.name, 
-      email: formData.email,
-      address: ''
-    });
-    toast.success('Account created successfully!');
-    navigate('/');
+    try {
+      // Create new user directly in localStorage for now
+      const newUser = {
+        id: Date.now(),
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        address: '',
+        orders: []
+      };
+
+      // Save to localStorage
+      localStorage.setItem('users', JSON.stringify([
+        ...JSON.parse(localStorage.getItem('users') || '[]'),
+        newUser
+      ]));
+
+      // Log user in
+      login(newUser);
+      toast.success('Account created successfully!');
+      navigate('/');
+      
+    } catch (err) {
+      setError('Failed to create account. Please try again.');
+      console.error('Signup error:', err);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 to-gray-100 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            Create Account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <Link to="/login" className="font-medium text-black hover:text-gray-800">
-              sign in to your account
-            </Link>
+          <p className="text-gray-600">
+            Join us for delicious food delivery
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="bg-red-50 text-red-500 p-3 rounded text-center">
+            <div className="bg-red-50 text-red-500 p-4 rounded-lg text-center text-sm">
               {error}
             </div>
           )}
 
-          <div className="rounded-md shadow-sm -space-y-px">
+          <div className="space-y-4">
             <div>
-              <label htmlFor="name" className="sr-only">
-                Name
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Full Name
               </label>
               <input
-                id="name"
                 type="text"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border
-                  border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none
-                  focus:ring-black focus:border-black focus:z-10 sm:text-sm"
-                placeholder="Full name"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                placeholder="Enter your name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
             </div>
+
             <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email Address
               </label>
               <input
-                id="email"
                 type="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border
-                  border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none
-                  focus:ring-black focus:border-black focus:z-10 sm:text-sm"
-                placeholder="Email address"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                placeholder="Enter your email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
             </div>
+
             <div>
-              <label htmlFor="password" className="sr-only">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Password
               </label>
               <input
-                id="password"
                 type="password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border
-                  border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none
-                  focus:ring-black focus:border-black focus:z-10 sm:text-sm"
-                placeholder="Password"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                placeholder="Create a password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               />
             </div>
+
             <div>
-              <label htmlFor="confirmPassword" className="sr-only">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Confirm Password
               </label>
               <input
-                id="confirmPassword"
                 type="password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border
-                  border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none
-                  focus:ring-black focus:border-black focus:z-10 sm:text-sm"
-                placeholder="Confirm password"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                placeholder="Confirm your password"
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
               />
             </div>
           </div>
 
-          <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent
-                text-sm font-medium rounded-full text-white bg-black hover:bg-gray-800
-                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
-            >
-              Create Account
-            </button>
+          <button
+            type="submit"
+            className="w-full bg-primary text-white py-3 rounded-lg font-medium
+              hover:bg-primary/90 transition-colors duration-200 
+              transform hover:scale-[1.02] active:scale-[0.98]"
+          >
+            Create Account
+          </button>
+
+          <div className="text-center text-sm text-gray-600">
+            Already have an account?{' '}
+            <Link to="/login" className="text-primary font-medium hover:underline">
+              Sign in
+            </Link>
           </div>
         </form>
       </div>

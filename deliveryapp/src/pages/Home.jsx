@@ -1,22 +1,20 @@
-import { restaurants } from '../assets/restaurants';
-import RestaurantCard from '../components/RestaurantCard';
-// import '../styles/Home.css';
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { CartContext } from '../context/CartContext';
 
 const Home = () => {
-  const featured = restaurants.slice(0, 6);
+  // keep contexts imported so Header / nav behavior remains correct
+  useContext(AuthContext);
+  useContext(CartContext);
 
   return (
-    <div className="home">
-      <section className="hero">
-        <h1>Food Delivery</h1>
-        <p>Order food from your favorite restaurants</p>
-      </section>
-
-      <h2>Featured</h2>
-      <section className="restaurants-grid">
-        {featured.map(r => <RestaurantCard key={r.id} restaurant={r} />)}
-      </section>
-    </div>
+    <main className="home-hero" aria-label="Home">
+      <img
+        className="home-image"
+        src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=80"
+        alt="Delicious food"
+      />
+    </main>
   );
 };
 

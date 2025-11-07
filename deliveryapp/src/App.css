@@ -52,6 +52,52 @@
   width: 100%;
 }
 
+/* Hero Section Styles */
+.hero-section {
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  transition: background-position 0.3s ease-out;
+}
+
+/* Floating Animation */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) rotate(-12deg); }
+  50% { transform: translateY(-20px) rotate(-8deg); }
+}
+
+@keyframes float-slower {
+  0%, 100% { transform: translateY(0) rotate(12deg); }
+  50% { transform: translateY(-15px) rotate(8deg); }
+}
+
+.animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+.animate-float-slower {
+  animation: float-slower 8s ease-in-out infinite;
+}
+
+/* Custom scroll bar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .main-content {
@@ -59,125 +105,53 @@
   }
   
   .restaurants-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr 1fr ;
   }
   
   .filters {
     flex-direction: column;
     gap: 10px;
   }
-}
-
-/* Common Components */
-.button {
-  padding: 0.75rem 1.5rem;
-  border-radius: 9999px;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  font-size: 0.875rem;
-}
-
-.button.primary {
-  background-color: var(--primary-color);
-  color: white;
-  box-shadow: 0 2px 4px rgba(255, 77, 77, 0.2);
-}
-
-.button.primary:hover {
-  background-color: var(--primary-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(255, 77, 77, 0.3);
-}
-
-.button.secondary {
-  background-color: #F3F4F6;
-  color: #374151;
-  border: 1px solid #D1D5DB;
-}
-
-.button.secondary:hover {
-  background-color: #E5E7EB;
-  transform: translateY(-1px);
-}
-
-/* Form Elements */
-.input {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
-  width: 100%;
-}
-
-/* Cards */
-.card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  padding: 16px;
-  transition: transform 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-}
-
-.restaurant-card {
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 12px;
-  background: #fff;
-  text-align: left;
-}
-.restaurant-card img {
-  width: 100%;
-  height: 140px;
-  object-fit: cover;
-  border-radius: 6px;
-  margin-bottom: 8px;
-}
-
-.restaurant-card:hover {
-  transform: translateY(-5px);
-}
-
-.cart-item {
-  display: flex;
-  align-items: center;
-  padding: 1rem;
-  border-bottom: 1px solid #ddd;
-}
-
-.cart-item img {
-  width: 64px;
-  height: 64px;
-  object-fit: cover;
-  border-radius: 6px;
-  margin-right: 12px;
-}
-
-.quantity-controls {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.quantity-controls button {
-  padding: 4px 8px;
-}
-
-.restaurants-page .filters {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
-  align-items: center;
-}
-.restaurants-grid {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  
+  .restaurant-info {
+    padding: 1rem;
+  }
+  
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .modal-content {
+    width: 95%;
+    padding: 1rem;
+  }
+  
+  .cart-page {
+    padding: 1rem;
+  }
+  
+  .cart-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .cart-item-image {
+    margin-bottom: 1rem;
+  }
+  
+  .cart-item-details {
+    margin-left: 0;
+    margin-bottom: 1rem;
+  }
+  
+  .quantity-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .hero-section {
+    background-attachment: scroll;
+  }
 }
 
 .hero {
@@ -289,71 +263,160 @@
   color: white;
 }
 
+/* ===== Improved Menu Grid & Card Styles ===== */
+/* Ensure high specificity so this rule applies even with Tailwind classes */
+.restaurant-detail .menu-grid,
 .menu-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 2rem;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); /* 3 columns on desktop */
+  gap: 1.25rem; /* 20px */
+  align-items: start;
+  margin-top: 0.75rem;
+  width: 100%;
 }
 
+/* Tablet: 2 columns */
+@media (max-width: 1024px) {
+  .restaurant-detail .menu-grid,
+  .menu-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile: 1 column */
+@media (max-width: 640px) {
+  .restaurant-detail .menu-grid,
+  .menu-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .menu-card {
+    min-height: auto;
+  }
+
+  .menu-card-image {
+    height: 140px;
+  }
+}
+
+/* Card base (keeps as-is, maybe increase min-height so cards align) */
 .menu-card {
-  background: white;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfbfb 100%);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  cursor: pointer;
-  transition: transform 0.2s;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+  height: 100%;
+  min-height: 260px; /* keep consistent card height */
 }
 
-.menu-card:hover {
-  transform: translateY(-4px);
-}
-
+/* ensure images stretch full width inside grid cards */
 .menu-card-image {
-  height: 200px;
+  width: 100%;
+  height: 180px;
   overflow: hidden;
+  flex-shrink: 0;
+  background: #f3f4f6;
 }
 
 .menu-card-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
+.menu-card:hover .menu-card-image img {
+  transform: scale(1.03);
+}
+
+/* Content */
 .menu-card-content {
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
 }
 
 .menu-card-content h3 {
   margin: 0;
-  font-size: 1.2rem;
-  color: #333;
+  font-size: 1.05rem;
+  color: #111827;
+  line-height: 1.25;
 }
 
 .menu-card-content p {
-  color: #666;
-  margin: 0.5rem 0;
+  margin: 0;
+  color: #6b7280;
   font-size: 0.9rem;
+  line-height: 1.4;
 }
 
+/* Footer area: price + actions aligned */
 .menu-card-footer {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-top: 1rem;
+  justify-content: space-between;
+  margin-top: auto;
+  gap: 1rem;
 }
 
+/* Price styling */
 .price {
-  font-weight: bold;
-  color: #ff4d4d;
+  font-weight: 700;
+  color: var(--primary-color);
+  font-size: 1rem;
 }
 
+/* Add to cart button (card) */
 .add-to-cart {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.9rem;
   border: none;
-  border-radius: 20px;
-  background: #ff4d4d;
-  color: white;
+  border-radius: 9999px;
+  background: var(--primary-color);
+  color: #fff;
+  font-weight: 600;
   cursor: pointer;
+  transition: background 160ms ease, transform 120ms ease, box-shadow 160ms ease;
+  box-shadow: 0 6px 14px rgba(255, 77, 77, 0.12);
+}
+
+.add-to-cart:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+.add-to-cart:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+}
+
+/* AddToCartButton component class (if used) */
+.add-to-cart-btn {
+  padding: 0.55rem 1rem;
+  border-radius: 9999px;
+  background: var(--primary-color);
+  color: #fff;
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 160ms ease, transform 120ms ease;
+}
+
+.add-to-cart-btn[disabled] {
+  background: #e6e6e6;
+  color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Modal */
@@ -452,7 +515,6 @@
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(255, 77, 77, 0.2);
-  font-size: 1rem;
 }
 
 .auth-form button:hover {
@@ -726,54 +788,276 @@
   margin-top: 16px;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .main-content {
-    padding: 10px;
+/* Order Tracking Styles */
+.order-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 2rem 0;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+}
+
+.step-circle {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  z-index: 1;
+}
+
+.step-line {
+  position: absolute;
+  top: 1.25rem;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  transform: translateY(-50%);
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
   }
-  
-  .restaurants-grid {
-    grid-template-columns: 1fr;
+  to {
+    transform: rotate(360deg);
   }
-  
-  .filters {
-    flex-direction: column;
-    gap: 10px;
+}
+
+/* Animation Keyframes */
+@keyframes scale {
+  0% {
+    transform: scale(1.1);
   }
-  
-  .restaurant-info {
-    padding: 1rem;
+  100% {
+    transform: scale(1);
   }
-  
-  .menu-grid {
-    grid-template-columns: 1fr;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-  
-  .modal-content {
-    width: 95%;
-    padding: 1rem;
+  to {
+    opacity: 1;
   }
-  
-  .cart-page {
-    padding: 1rem;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  
-  .cart-item {
-    flex-direction: column;
-    align-items: flex-start;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .cart-item-image {
-    margin-bottom: 1rem;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100px);
   }
-  
-  .cart-item-details {
-    margin-left: 0;
-    margin-bottom: 1rem;
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
-  
-  .quantity-controls {
-    width: 100%;
-    justify-content: space-between;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
   }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Additions for Ken Burns and Float Effects */
+@keyframes ken-burns {
+  0% {
+    transform: scale(1.2) translate(-2%, -2%);
+  }
+  100% {
+    transform: scale(1) translate(2%, 2%);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+    opacity: 0.8;
+  }
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-left {
+  0% {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-right {
+  0% {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Animation Classes */
+.animate-scale {
+  animation: scale 20s ease-in-out infinite alternate;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 1s ease-out;
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 0.8s ease-out;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.8s ease-out;
+}
+
+.animate-ken-burns {
+  animation: ken-burns 20s ease-out infinite alternate;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+  animation-fill-mode: both;
+}
+
+/* Hover Animations */
+.hover\:scale-105:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
+}
+
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+/* Landing Page Animations */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.animate-bounce {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Landing Page Styles */
+.landing-page {
+  min-height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.hero-section {
+  background-color: black;
+}
+
+.hero-section img.animate-scale {
+  animation: scale 30s ease-in-out infinite alternate;
+}
+
+.landing-container {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+  background-color: black;
+}
+
+.shadow-glow-primary {
+  box-shadow: 0 0 25px rgba(255, 77, 77, 0.5);
+}
+
+.shadow-glow-white {
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+}
+
+/* Make sure images start invisible and fade in */
+[class*="animate-float"] {
+  opacity: 0;
+  animation-fill-mode: forwards;
 }
