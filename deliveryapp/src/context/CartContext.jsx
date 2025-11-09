@@ -8,10 +8,11 @@ const cartReducer = (state, action) => {
     case 'ADD_ITEM': {
       const existingItem = state.find(item => item.id === action.payload.id);
       if (existingItem) {
-        toast.info('Item already in cart');
-        return state; // Return state unchanged if item exists
+        // increment quantity without showing toast here
+        return state.map(item =>
+          item.id === action.payload.id ? { ...item, quantity: item.quantity + 1 } : item
+        );
       }
-      toast.success('Added to cart!');
       return [...state, { ...action.payload, quantity: 1 }];
     }
     case 'REMOVE_ITEM':

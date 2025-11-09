@@ -1,8 +1,9 @@
-import { useState, useContext } from 'react';
+import { useContext, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { restaurants } from '../assets/restaurants';
-import { CartContext } from '../context/CartContext';
 import { toast } from 'react-toastify';
+import { restaurants } from '../assets/restaurants';
+import AddToCartButton from '../components/AddToCartButton';
+import { CartContext } from '../context/CartContext';
 
 const RestaurantDetail = () => {
   const { id } = useParams();
@@ -75,31 +76,29 @@ const RestaurantDetail = () => {
       {/* Menu Grid - use CSS grid from src/App.css (.menu-grid / .menu-card) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredMenu?.map(item => (
-          <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="h-48 overflow-hidden">
-              <img 
-                src={item.image} 
+          <article
+            key={item.id}
+            className="menu-card bg-white rounded-lg shadow-md overflow-hidden"
+          >
+            <div className="menu-card-image h-48 overflow-hidden">
+              <img
+                src={item.image}
                 alt={item.name}
                 className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-200"
               />
             </div>
 
-            <div className="p-4">
+            <div className="menu-card-content p-4 flex flex-col">
               <h3 className="font-semibold text-lg mb-2">{item.name}</h3>
               <p className="text-gray-600 text-sm mb-4">{item.description}</p>
 
-              <div className="flex items-center justify-between mt-auto">
-                <span className="text-primary font-bold">${item.price.toFixed(2)}</span>
-                <button
-                  onClick={() => handleAddToCart(item)}
-                  className="bg-primary text-white px-4 py-2 rounded-full text-sm font-medium
-                    hover:bg-primary/90 transition-colors"
-                >
-                  Add to Cart
-                </button>
+              {/* Footer always visible (price + action). 'always-visible' ensures CSS specificity */}
+              <div className="menu-card-footer always-visible mt-auto flex items-center justify-between">
+                <span className="price text-primary font-bold">${item.price.toFixed(2)}</span>
+                <AddToCartButton item={{ ...item, restaurantId: restaurant.id }} />
               </div>
             </div>
-          </div>
+          </article>
         ))}
       </div>
     </div>

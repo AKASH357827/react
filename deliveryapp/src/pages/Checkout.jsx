@@ -157,13 +157,17 @@ const Checkout = () => {
           </div>
         </div>
 
-        <button
-          type="submit"
-          className="w-full bg-primary text-white py-3 rounded-full font-medium
-            hover:bg-primary/90 transition-colors"
-        >
-          Place Order
-        </button>
+        {/* Updated submit button with better visibility and positioning */}
+        <div className="sticky bottom-4 z-50"> {/* Makes button stick to bottom */}
+          <button
+            type="submit"
+            className="w-full bg-black text-white py-3 rounded-full text-lg font-medium
+              hover:bg-gray-800 transition-all duration-200 transform hover:scale-105
+              shadow-lg relative z-50" // Added relative and z-50 for visibility
+          >
+            Place Order (${(cart.reduce((s, i) => s + i.price * i.quantity, 0) + 5).toFixed(2)})
+          </button>
+        </div>
       </form>
     </div>
   );

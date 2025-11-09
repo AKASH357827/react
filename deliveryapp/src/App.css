@@ -1061,3 +1061,33 @@
   opacity: 0;
   animation-fill-mode: forwards;
 }
+
+/* Force Add to Cart and footer to always be visible on menu cards */
+.menu-card-footer.always-visible,
+.menu-card-footer {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  z-index: 2;
+}
+
+/* Ensure add-to-cart styled buttons are visible (AddToCartButton / .add-to-cart / .add-to-cart-btn) */
+.add-to-cart,
+.add-to-cart-btn,
+.menu-card-footer .add-to-cart,
+.menu-card-footer .add-to-cart-btn {
+  display: inline-flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+}
+
+/* If any rule hides children via overflow, make footer positioned so it's not clipped */
+.menu-card {
+  position: relative;
+}
+
+/* Keep footer aligned and above image */
+.menu-card-footer {
+  position: relative;
+}

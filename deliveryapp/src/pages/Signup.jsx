@@ -135,14 +135,14 @@ const Signup = () => {
 
           <button
             type="submit"
-            className="w-full bg-primary text-white py-3 rounded-lg font-medium
-              hover:bg-primary/90 transition-colors duration-200 
-              transform hover:scale-[1.02] active:scale-[0.98]"
+            className="w-full bg-black text-white py-3 rounded-full text-lg font-medium
+              hover:bg-gray-800 transition-all duration-200 transform hover:scale-105
+              shadow-lg z-10 relative" // Added z-10 and relative positioning
           >
             Create Account
           </button>
 
-          <div className="text-center text-sm text-gray-600">
+          <div className="text-center text-sm text-gray-600 mt-4">
             Already have an account?{' '}
             <Link to="/login" className="text-primary font-medium hover:underline">
               Sign in
