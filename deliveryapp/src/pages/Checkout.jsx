@@ -53,7 +53,7 @@ const Checkout = () => {
     };
 
     const order = {
-      userId: String(user?.id), // ensure string so server queries match
+      userId: String(user?.id),
       items: cart,
       address: addressObj,
       status: 'Received',

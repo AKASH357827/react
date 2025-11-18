@@ -23,6 +23,14 @@
       "password": "12",
       "address": "",
       "orders": []
+    },
+    {
+      "id": "23e7",
+      "name": "akash",
+      "email": "a@3",
+      "password": "123",
+      "address": "",
+      "orders": []
     }
   ],
   "orders": [
