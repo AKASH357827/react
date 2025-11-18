@@ -17,12 +17,8 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:3000/users');
-      let users = [];
-      if (res.ok) users = await res.json();
-      else users = JSON.parse(localStorage.getItem('users') || '[]');
-
-      if (!Array.isArray(users)) users = JSON.parse(localStorage.getItem('users') || '[]');
+      const response = await fetch('http://localhost:3000/users');
+      const users = await response.json();
 
       const user = users.find(u => u.email === formData.email && u.password === formData.password);
 
@@ -35,16 +31,8 @@ const Login = () => {
         setError('Invalid email or password');
       }
     } catch (err) {
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const user = users.find(u => u.email === formData.email && u.password === formData.password);
-      if (user) {
-        login(user);
-        if (remember) localStorage.setItem('user', JSON.stringify(user));
-        toast.success('Signed in (offline)');
-        navigate('/');
-      } else {
-        setError('Unable to sign in. Check credentials or start the json-server.');
-      }
+      setError('Unable to sign in. Make sure json-server is running.');
+      console.error('Login error:', err);
     } finally {
       setLoading(false);
     }

@@ -1,24 +1,59 @@
 {
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Demo User",
       "email": "demo@example.com",
       "password": "demo123",
+      "address": "",
+      "orders": []
+    },
+    {
+      "id": "b413",
+      "name": "akash",
+      "email": "a@1",
+      "password": "12",
       "address": "",
       "orders": []
     }
   ],
   "orders": [
     {
-      "id": 1,
-      "userId": 1,
-      "items": [],
+      "id": "16bf",
+      "userId": "b413",
+      "items": [
+        {
+          "id": 13,
+          "name": "Mezze Platter",
+          "category": "Appetizers",
+          "description": "Hummus, falafel, tabouleh",
+          "price": 18.99,
+          "image": "https://images.unsplash.com/photo-1542345812-d98b5cd6cf98",
+          "restaurantId": 6,
+          "quantity": 1
+        },
+        {
+          "id": 12,
+          "name": "Shawarma Plate",
+          "category": "Main Course",
+          "description": "Grilled meat with rice and salad",
+          "price": 15.99,
+          "image": "https://images.unsplash.com/photo-1529006557810-274b9b2fc783",
+          "restaurantId": 6,
+          "quantity": 1
+        }
+      ],
+      "address": {
+        "street": "Add",
+        "apartment": "qwdf",
+        "city": "Bengaluru",
+        "state": "",
+        "zipCode": "wejfb",
+        "phone": "98447 58372"
+      },
       "status": "Received",
-      "total": 0,
-      "address": {},
-      "orderDate": "",
-      "review": null
+      "total": 39.98,
+      "orderDate": "2025-11-17T11:07:05.450Z"
     }
   ]
 }

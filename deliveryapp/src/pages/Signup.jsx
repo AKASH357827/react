@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
+import { AuthContext } from '../context/AuthContext';
 
 const Signup = () => {
   const { login } = useContext(AuthContext);
@@ -29,9 +29,7 @@ const Signup = () => {
     }
 
     try {
-      // Create new user directly in localStorage for now
       const newUser = {
-        id: Date.now(),
         name: formData.name,
         email: formData.email,
         password: formData.password,
@@ -39,17 +37,16 @@ const Signup = () => {
         orders: []
       };
 
-      // Save to localStorage
-      localStorage.setItem('users', JSON.stringify([
-        ...JSON.parse(localStorage.getItem('users') || '[]'),
-        newUser
-      ]));
+      const response = await fetch('http://localhost:3000/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newUser)
+      });
 
-      // Log user in
-      login(newUser);
+      const createdUser = await response.json();
+      login(createdUser);
       toast.success('Account created successfully!');
       navigate('/');
-      
     } catch (err) {
       setError('Failed to create account. Please try again.');
       console.error('Signup error:', err);

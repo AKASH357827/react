@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
 
 const statuses = ['Received', 'Preparing', 'Out for Delivery', 'Delivered'];
 
@@ -35,29 +34,13 @@ const OrderTracking = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchOrder = () => {
-      // First try to get from localStorage
-      const orderData = localStorage.getItem(`order_${id}`);
-      if (orderData) {
-        const parsedOrder = JSON.parse(orderData);
-        setOrder(parsedOrder);
-        
-        // Simulate status updates
-        if (parsedOrder.status !== 'Delivered') {
-          const currentIndex = statuses.indexOf(parsedOrder.status);
-          if (currentIndex < statuses.length - 1) {
-            const nextStatus = statuses[currentIndex + 1];
-            const updatedOrder = {
-              ...parsedOrder,
-              status: nextStatus
-            };
-            localStorage.setItem(`order_${id}`, JSON.stringify(updatedOrder));
-            setOrder(updatedOrder);
-            toast.info(`Order status updated to: ${nextStatus}`);
-          }
-        }
+    const fetchOrder = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/orders/${id}`);
+        const orderData = await response.json();
+        setOrder(orderData);
         setLoading(false);
-      } else {
+      } catch (err) {
         setError('Order not found');
         setLoading(false);
       }

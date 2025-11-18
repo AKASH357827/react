@@ -1,14 +1,18 @@
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
 
 const Checkout = () => {
   const { cart, dispatch } = useContext(CartContext);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     address: '',
     apartment: '',
     city: '',
+    state: '',
     zipCode: '',
     phone: '',
     paymentMethod: 'card',
@@ -16,29 +20,84 @@ const Checkout = () => {
     cardExpiry: '',
     cardCvv: '',
   });
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!user) {
+      toast.error('Please sign in to place an order');
+      navigate('/login');
+      return;
+    }
+
+    if (!cart || cart.length === 0) {
+      toast.error('Your cart is empty');
+      return;
+    }
+
+    setLoading(true);
+
+    const addressObj = {
+      street: formData.address,
+      apartment: formData.apartment || '',
+      city: formData.city || '',
+      state: formData.state || '',
+      zipCode: formData.zipCode || '',
+      phone: formData.phone || ''
+    };
+
     const order = {
-      id: Date.now(),
+      userId: String(user?.id), // ensure string so server queries match
       items: cart,
-      address: formData,
-      status: 'Received', // Initial status
+      address: addressObj,
+      status: 'Received',
       total: cart.reduce((s, i) => s + i.price * i.quantity, 0) + 5,
       orderDate: new Date().toISOString(),
     };
-    
-    localStorage.setItem(`order_${order.id}`, JSON.stringify(order));
-    dispatch({ type: 'CLEAR_CART' });
-    navigate(`/order-confirmation/${order.id}`);
+
+    try {
+      const response = await fetch('http://localhost:3000/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(order)
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Server responded ${response.status}: ${text}`);
+      }
+
+      const savedOrder = await response.json();
+      console.log('Order saved on server:', savedOrder);
+      dispatch({ type: 'CLEAR_CART' });
+      toast.success('Order placed successfully!');
+      navigate(`/order-confirmation/${savedOrder.id}`);
+    } catch (err) {
+      console.error('Error creating order:', err);
+      toast.error('Could not reach server — saving order locally');
+
+      // fallback: accumulate local fallback orders under 'local_orders'
+      const fallbackId = `local_${Date.now()}`;
+      const fallbackOrder = { ...order, id: fallbackId };
+      const localOrders = JSON.parse(localStorage.getItem('local_orders') || '[]');
+      localOrders.push(fallbackOrder);
+      localStorage.setItem('local_orders', JSON.stringify(localOrders));
+
+      dispatch({ type: 'CLEAR_CART' });
+      navigate(`/order-confirmation/${fallbackId}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="max-w-2xl mx-auto px-4 py-8 pb-24">
       <h2 className="text-2xl font-bold mb-6">Checkout</h2>
       
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -157,17 +216,16 @@ const Checkout = () => {
           </div>
         </div>
 
-        {/* Updated submit button with better visibility and positioning */}
-        <div className="sticky bottom-4 z-50"> {/* Makes button stick to bottom */}
-          <button
-            type="submit"
-            className="w-full bg-black text-white py-3 rounded-full text-lg font-medium
-              hover:bg-gray-800 transition-all duration-200 transform hover:scale-105
-              shadow-lg relative z-50" // Added relative and z-50 for visibility
-          >
-            Place Order (${(cart.reduce((s, i) => s + i.price * i.quantity, 0) + 5).toFixed(2)})
-          </button>
-        </div>
+        {/* Fixed button - no sticky, just good positioning */}
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full bg-black text-white py-3 rounded-full text-lg font-medium
+            ${loading ? 'opacity-60 cursor-not-allowed' : 'hover:bg-gray-800 transition-all duration-200 transform hover:scale-105'}
+            shadow-lg`}
+        >
+          {loading ? 'Placing order...' : `Place Order (${(cart.reduce((s, i) => s + i.price * i.quantity, 0) + 5).toFixed(2)})`}
+        </button>
       </form>
     </div>
   );

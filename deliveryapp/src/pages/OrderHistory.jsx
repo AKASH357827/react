@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
@@ -86,32 +86,54 @@ const ReviewForm = ({ orderId, onSubmit, onCancel }) => {
 
 const OrderHistory = () => {
   const { user } = useContext(AuthContext);
+  const [orders, setOrders] = useState([]);
   const [reviewingOrder, setReviewingOrder] = useState(null);
-  
-  // Get orders from localStorage and sort by date (newest first)
-  const orders = Object.keys(localStorage)
-    .filter(k => k.startsWith('order_'))
-    .map(k => JSON.parse(localStorage.getItem(k)))
-    .sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
 
-  const handleSubmitReview = (orderId, review) => {
-    // Get the order
-    const orderKey = `order_${orderId}`;
-    const order = JSON.parse(localStorage.getItem(orderKey));
-    
-    // Add review to order
-    const updatedOrder = {
-      ...order,
-      review: {
-        ...review,
-        date: new Date().toISOString()
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        // fetch server orders
+        const response = await fetch(`http://localhost:3000/orders?userId=${user.id}`);
+        const serverOrders = response.ok ? await response.json() : [];
+
+        // also include any locally saved fallback orders
+        const localOrdersAll = JSON.parse(localStorage.getItem('local_orders') || '[]');
+        const localOrdersForUser = localOrdersAll.filter(o => String(o.userId) === String(user.id));
+
+        const combined = [...serverOrders, ...localOrdersForUser];
+        setOrders(combined.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate)));
+      } catch (err) {
+        console.error('Error fetching orders:', err);
+        // on error, still show local fallback orders if any
+        const localOrdersAll = JSON.parse(localStorage.getItem('local_orders') || '[]');
+        const localOrdersForUser = localOrdersAll.filter(o => String(o.userId) === String(user.id));
+        setOrders(localOrdersForUser.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate)));
       }
     };
-    
-    // Save updated order
-    localStorage.setItem(orderKey, JSON.stringify(updatedOrder));
-    setReviewingOrder(null);
-    toast.success('Review submitted successfully!');
+
+    if (user) {
+      fetchOrders();
+    }
+  }, [user]);
+
+  const handleSubmitReview = async (orderId, review) => {
+    try {
+      await fetch(`http://localhost:3000/orders/${orderId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          review: {
+            ...review,
+            date: new Date().toISOString()
+          }
+        })
+      });
+      setOrders(orders.map(o => o.id === orderId ? { ...o, review } : o));
+      setReviewingOrder(null);
+      toast.success('Review submitted successfully!');
+    } catch (err) {
+      console.error('Error submitting review:', err);
+    }
   };
 
   return (

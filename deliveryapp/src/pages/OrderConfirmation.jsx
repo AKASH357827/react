@@ -4,14 +4,26 @@ import { Link, useParams } from 'react-router-dom';
 const OrderConfirmation = () => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const orderData = localStorage.getItem(`order_${id}`);
-    if (orderData) {
-      setOrder(JSON.parse(orderData));
-    }
+    const fetchOrder = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/orders/${id}`);
+        if (!response.ok) throw new Error('Order not found');
+        const data = await response.json();
+        setOrder(data);
+      } catch (error) {
+        console.error('Error fetching order:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrder();
   }, [id]);
 
+  if (loading) return <div>Loading...</div>;
   if (!order) return <div>Order not found</div>;
 
   return (
@@ -24,25 +36,35 @@ const OrderConfirmation = () => {
         </div>
         
         <h2 className="text-2xl font-bold mb-2">Thank You for Your Order!</h2>
-        <p className="text-gray-600 mb-6">Your order has been confirmed</p>
+        <p className="text-gray-600 mb-6">Order #{order.id} has been confirmed</p>
         
         <div className="text-left border-t pt-6">
           <h3 className="font-semibold mb-4">Order Details</h3>
-          <p className="text-gray-600">Order Number: #{order.id}</p>
-          <p className="text-gray-600">Order Date: {new Date(order.orderDate).toLocaleDateString()}</p>
-          <p className="text-gray-600">Total Amount: ${order.total.toFixed(2)}</p>
+          <div className="space-y-2">
+            <p className="text-gray-600">Order Date: {order.orderDate ? new Date(order.orderDate).toLocaleDateString() : '—'}</p>
+            <p className="text-gray-600">Delivery Address:</p>
+            <div className="bg-gray-50 p-3 rounded">
+              {order.address?.street ?? order.address ?? 'No address'}
+              <br />
+              {order.address?.apartment ? `${order.address.apartment}, ` : ''}
+              {order.address?.city ? `${order.address.city}, ` : ''}{order.address?.state ?? ''} {order.address?.zipCode ?? ''}
+            </div>
+            <p className="text-gray-600 mt-4">Total Amount: ${Number(order.total || 0).toFixed(2)}</p>
+          </div>
         </div>
 
         <div className="mt-8 space-x-4">
           <Link 
             to={`/order/${order.id}`}
-            className="inline-block bg-primary text-white px-6 py-2 rounded-full"
+            className="inline-block bg-primary text-white px-6 py-2 rounded-full
+              hover:bg-primary/90 transition-colors"
           >
             Track Order
           </Link>
           <Link 
-            to="/"
-            className="inline-block bg-gray-100 text-gray-700 px-6 py-2 rounded-full"
+            to="/restaurants"
+            className="inline-block bg-gray-100 text-gray-700 px-6 py-2 rounded-full
+              hover:bg-gray-200 transition-colors"
           >
             Continue Shopping
           </Link>
