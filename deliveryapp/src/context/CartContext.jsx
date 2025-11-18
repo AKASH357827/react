@@ -8,7 +8,6 @@ const cartReducer = (state, action) => {
     case 'ADD_ITEM': {
       const existingItem = state.find(item => item.id === action.payload.id);
       if (existingItem) {
-        // increment quantity without showing toast here
         return state.map(item =>
           item.id === action.payload.id ? { ...item, quantity: item.quantity + 1 } : item
         );

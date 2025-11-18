@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 
 const OrderStatus = ({ status }) => {
-  // Define the status flow
+  
   const statuses = ['Received', 'Preparing', 'Out for Delivery', 'Delivered'];
   const currentIndex = statuses.indexOf(status);
 

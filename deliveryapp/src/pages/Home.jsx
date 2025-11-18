@@ -9,7 +9,6 @@ const Home = () => {
 
   return (
     <div className="fixed inset-0 w-full h-full overflow-hidden">
-      {/* Background Image with Overlay */}
       <div className="absolute inset-0">
         <img
           src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=80"
@@ -18,8 +17,6 @@ const Home = () => {
         />
         <div className="absolute inset-0 bg-black/50"></div>
       </div>
-
-      {/* Navigation Buttons */}
       <div className="absolute top-6 right-6 flex items-center gap-4">
         <Link 
           to="/restaurants" 

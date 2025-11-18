@@ -20,7 +20,7 @@ const Restaurants = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Filters Section */}
+    
       <div className="mb-8 flex flex-wrap gap-4">
         <input
           type="text"
@@ -49,14 +49,14 @@ const Restaurants = () => {
         </select>
       </div>
 
-      {/* Restaurants Grid - 3 columns */}
+    
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredRestaurants.map(restaurant => (
           <RestaurantCard key={restaurant.id} restaurant={restaurant} />
         ))}
       </div>
 
-      {/* Empty State */}
+    
       {filteredRestaurants.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">No restaurants found</p>
